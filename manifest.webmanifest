@@ -1,7 +1,7 @@
 {
   "name": "Poring Clicker Prototype",
   "short_name": "Poring Clicker",
-  "description": "Prototype privé d'entraînement de jeu idle/clicker mobile.",
+  "description": "Prototype privé idle/clicker inspiré de Ragnarok Online.",
   "start_url": "./",
   "display": "standalone",
   "background_color": "#0f172a",
