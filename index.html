@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#111827">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Poring Clicker">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<title>Poring Clicker — Prototype privé</title>
+<style>
+:root{--bg:#0f172a;--panel:#111827;--panel2:#1f2937;--text:#f8fafc;--muted:#94a3b8;--accent:#f472b6;--gold:#fbbf24;--line:#334155;--good:#34d399}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
+body{min-height:100vh;padding-bottom:calc(24px + env(safe-area-inset-bottom))}
+header{padding:calc(14px + env(safe-area-inset-top)) 16px 8px;text-align:center}
+h1{margin:0;font-size:1.35rem}.sub{color:var(--muted);font-size:.88rem;margin-top:4px}
+main{max-width:760px;margin:auto;padding:0 12px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:12px}
+.stat{text-align:center}.stat b{display:block;font-size:1.08rem;margin-top:4px;color:var(--gold)}.stat span{font-size:.75rem;color:var(--muted)}
+.hero{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:18px 0 10px}
+.poring-wrap{position:relative;width:220px;height:220px;display:flex;align-items:center;justify-content:center}
+.poring{width:170px;height:140px;border-radius:52% 52% 48% 48% / 58% 58% 42% 42%;background:var(--accent);position:relative;cursor:pointer;user-select:none;box-shadow:inset 0 -12px 0 rgba(0,0,0,.08),0 12px 30px rgba(0,0,0,.28);transform-origin:center bottom;transition:transform .08s ease}
+.poring:active{transform:scale(.92)}
+.poring::before,.poring::after{content:"";position:absolute;top:52px;width:14px;height:20px;border-radius:50%;background:#111827}
+.poring::before{left:48px}.poring::after{right:48px}
+.mouth{position:absolute;left:50%;top:82px;width:40px;height:18px;transform:translateX(-50%);border-bottom:4px solid #111827;border-radius:0 0 50% 50%}
+.shine{position:absolute;left:38px;top:28px;width:34px;height:18px;background:rgba(255,255,255,.35);border-radius:50%;transform:rotate(-20deg)}
+.crown{position:absolute;top:-18px;font-size:34px;left:50%;transform:translateX(-50%);display:none}
+.tap-label{margin-top:6px;color:var(--muted);font-size:.9rem}
+.float{position:fixed;pointer-events:none;font-weight:800;color:var(--gold);z-index:999;animation:floatUp .8s ease-out forwards}
+@keyframes floatUp{from{opacity:1;transform:translateY(0) scale(1)}to{opacity:0;transform:translateY(-70px) scale(1.25)}}
+.section-title{font-size:1rem;margin:18px 2px 8px}.shop{display:grid;gap:8px}
+.item{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center}.item-name{font-weight:700}.item-desc{font-size:.8rem;color:var(--muted);margin-top:3px}.item-meta{font-size:.76rem;color:var(--good);margin-top:5px}
+.buy{border:none;border-radius:14px;padding:10px 12px;background:var(--gold);color:#111827;font-weight:800;min-width:100px}.buy:disabled{opacity:.35}
+.prestige{margin-top:10px;background:linear-gradient(135deg,#2a1530,#19172b)}.prestige button{width:100%;border:none;border-radius:14px;padding:12px;background:#c084fc;color:#1f1230;font-weight:900}.prestige button:disabled{opacity:.35}
+.row{display:flex;justify-content:space-between;gap:12px;align-items:center}.small{font-size:.8rem;color:var(--muted)}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}.secondary{border:1px solid var(--line);background:var(--panel2);color:var(--text);border-radius:14px;padding:10px;font-weight:700}
+.toast{position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom));transform:translateX(-50%);background:#111827;border:1px solid var(--line);padding:10px 14px;border-radius:999px;opacity:0;transition:.2s;z-index:1000}.toast.show{opacity:1}
+@media(min-width:680px){.shop{grid-template-columns:1fr 1fr}.poring-wrap{width:250px;height:250px}.poring{width:190px;height:155px}}
+</style>
+</head>
+<body>
+<header><h1>Poring Clicker</h1><div class="sub">Prototype privé d'entraînement — Idle / Clicker</div></header>
+<main>
+<section class="stats">
+<div class="card stat"><span>Zeny</span><b id="zeny">0</b></div>
+<div class="card stat"><span>Par clic</span><b id="perClick">1</b></div>
+<div class="card stat"><span>Par seconde</span><b id="perSec">0</b></div>
+</section>
+<section class="hero">
+<div class="poring-wrap"><div class="poring" id="poring" aria-label="Cliquer sur le Poring"><div class="shine"></div><div class="mouth"></div><div class="crown" id="crown">👑</div></div></div>
+<div class="tap-label" id="formLabel">Poring — touche-le pour gagner des Zeny</div>
+</section>
+<h2 class="section-title">Classes / professions</h2>
+<section class="shop" id="shop"></section>
+<h2 class="section-title">Prestige</h2>
+<section class="card prestige">
+<div class="row"><div><div class="item-name">Évolution du Poring</div><div class="item-desc">Recommence presque à zéro, mais gagne un bonus permanent.</div></div><div class="small" id="prestigeInfo"></div></div>
+<button id="prestigeBtn" type="button">Prestige indisponible</button>
+</section>
+<section class="actions"><button class="secondary" id="saveBtn" type="button">Sauvegarder</button><button class="secondary" id="resetBtn" type="button">Réinitialiser</button></section>
+</main>
+<div class="toast" id="toast"></div>
+<script>
+const professions=[
+{id:"novice",name:"Novice",baseCost:15,baseIncome:.2,desc:"Tes premiers aventuriers."},
+{id:"swordsman",name:"Swordman",baseCost:100,baseIncome:1.2,desc:"Rapporte des Zeny régulièrement."},
+{id:"archer",name:"Archer",baseCost:500,baseIncome:6,desc:"Production à distance, stable et efficace."},
+{id:"mage",name:"Mage",baseCost:2500,baseIncome:28,desc:"Magie coûteuse, gros rendement."},
+{id:"acolyte",name:"Acolyte",baseCost:12000,baseIncome:120,desc:"Bénit ton économie."},
+{id:"merchant",name:"Merchant",baseCost:60000,baseIncome:520,desc:"Le spécialiste du Zeny."},
+{id:"thief",name:"Thief",baseCost:300000,baseIncome:2200,desc:"Trouve des profits là où personne ne regarde."}
+];
+const forms=[
+{name:"Poring",mult:1,color:"#f472b6"},
+{name:"Drops",mult:1.5,color:"#f9a8d4"},
+{name:"Poporing",mult:2.25,color:"#65a30d"},
+{name:"Marin",mult:3.5,color:"#38bdf8"},
+{name:"Angeling",mult:5.5,color:"#f8fafc"},
+{name:"Deviling",mult:8.5,color:"#7c3aed"},
+{name:"Ghostring",mult:13,color:"#cbd5e1"}
+];
+const defaultState={zeny:0,totalEarned:0,clicks:0,prestige:0,professionCounts:{},lastSave:Date.now()};
+let state=loadState();
+function cloneDefault(){return JSON.parse(JSON.stringify(defaultState))}
+function loadState(){try{const raw=localStorage.getItem("poringClickerV1");if(!raw)return cloneDefault();const s={...cloneDefault(),...JSON.parse(raw)};s.professionCounts=s.professionCounts||{};return s}catch(e){return cloneDefault()}}
+function saveState(show=false){state.lastSave=Date.now();localStorage.setItem("poringClickerV1",JSON.stringify(state));if(show)toast("Sauvegarde effectuée")}
+function prestigeMultiplier(){return forms[Math.min(state.prestige,forms.length-1)].mult}
+function clickValue(){return Math.max(1,Math.floor(prestigeMultiplier()*(1+state.prestige*.5)))}
+function itemCost(p){const count=state.professionCounts[p.id]||0;return Math.floor(p.baseCost*Math.pow(1.15,count))}
+function incomePerSecond(){let total=0;for(const p of professions){const c=state.professionCounts[p.id]||0;total+=c*p.baseIncome}return total*prestigeMultiplier()}
+function fmt(n){if(n<1000)return Math.floor(n).toLocaleString("fr-FR");const u=["k","M","Md","B"];let i=-1;while(n>=1000&&i<u.length-1){n/=1000;i++}return n.toLocaleString("fr-FR",{maximumFractionDigits:2})+" "+u[i]}
+function renderShop(){const shop=document.getElementById("shop");shop.innerHTML="";professions.forEach(p=>{const count=state.professionCounts[p.id]||0;const cost=itemCost(p);const el=document.createElement("div");el.className="card item";el.innerHTML=`<div><div class="item-name">${p.name} × ${count}</div><div class="item-desc">${p.desc}</div><div class="item-meta">+${fmt(p.baseIncome*prestigeMultiplier())} Zeny/s chacun</div></div><button class="buy" ${state.zeny<cost?"disabled":""}>${fmt(cost)} Z</button>`;el.querySelector("button").addEventListener("click",()=>{if(state.zeny<cost)return;state.zeny-=cost;state.professionCounts[p.id]=count+1;render()});shop.appendChild(el)})}
+function prestigeRequirement(){return 1000000*Math.pow(8,state.prestige)}
+function renderPrestige(){const req=prestigeRequirement();const btn=document.getElementById("prestigeBtn");const next=forms[Math.min(state.prestige+1,forms.length-1)];const can=state.totalEarned>=req&&state.prestige<forms.length-1;document.getElementById("prestigeInfo").textContent=`${fmt(state.totalEarned)} / ${fmt(req)} Z`;btn.disabled=!can;btn.textContent=state.prestige>=forms.length-1?"Dernière forme atteinte":can?`Évoluer en ${next.name}`:`Prestige à ${fmt(req)} Z gagnés`}
+function render(){document.getElementById("zeny").textContent=fmt(state.zeny);document.getElementById("perClick").textContent=fmt(clickValue());document.getElementById("perSec").textContent=fmt(incomePerSecond());const f=forms[Math.min(state.prestige,forms.length-1)];document.getElementById("formLabel").textContent=`${f.name} — bonus ×${f.mult}`;document.getElementById("poring").style.background=f.color;document.getElementById("crown").style.display=state.prestige>=4?"block":"none";renderShop();renderPrestige()}
+document.getElementById("poring").addEventListener("click",e=>{const v=clickValue();state.zeny+=v;state.totalEarned+=v;state.clicks++;const f=document.createElement("div");f.className="float";f.textContent="+"+fmt(v);f.style.left=(e.clientX-12)+"px";f.style.top=(e.clientY-10)+"px";document.body.appendChild(f);setTimeout(()=>f.remove(),800);render()});
+document.getElementById("prestigeBtn").addEventListener("click",()=>{const req=prestigeRequirement();if(state.totalEarned<req||state.prestige>=forms.length-1)return;state.prestige++;state.zeny=0;state.totalEarned=0;state.professionCounts={};saveState();toast("Prestige ! Nouvelle forme débloquée");render()});
+document.getElementById("saveBtn").addEventListener("click",()=>saveState(true));
+document.getElementById("resetBtn").addEventListener("click",()=>{if(confirm("Effacer toute la progression ?")){localStorage.removeItem("poringClickerV1");state=cloneDefault();render();toast("Progression réinitialisée")}});
+function toast(msg){const t=document.getElementById("toast");t.textContent=msg;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),1600)}
+function applyOfflineGain(){const now=Date.now();const elapsed=Math.min((now-state.lastSave)/1000,8*3600);const gain=incomePerSecond()*elapsed;if(gain>1){state.zeny+=gain;state.totalEarned+=gain;toast(`Gain hors-ligne : +${fmt(gain)} Zeny`)}state.lastSave=now}
+applyOfflineGain();render();
+setInterval(()=>{const gain=incomePerSecond()/10;state.zeny+=gain;state.totalEarned+=gain;render()},100);
+setInterval(()=>saveState(false),10000);
+if("serviceWorker"in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("service-worker.js").catch(()=>{}))}
+</script>
+</body>
+</html>
